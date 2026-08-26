@@ -1,0 +1,2 @@
+# Raw telemetry may contain operational or sensitive data
+telemetry/*.log

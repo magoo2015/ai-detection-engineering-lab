@@ -1,0 +1,4 @@
+Aug 25 10:15:01 detection-lab sshd[10001]: Invalid user admin from 203.0.113.10 port 45001
+Aug 25 10:15:05 detection-lab sshd[10002]: Invalid user  from 203.0.113.11 port 45002
+Aug 25 10:16:10 detection-lab sshd[10003]: Connection reset by authenticating user root 203.0.113.12 port 45003 [preauth]
+Aug 25 10:17:20 detection-lab sshd[10004]: Accepted publickey for sysadmin from 203.0.113.13 port 45004 ssh2: ED25519 SHA256:TESTFINGERPRINT
