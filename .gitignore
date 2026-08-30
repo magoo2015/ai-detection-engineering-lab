@@ -1,2 +1,17 @@
 # Raw telemetry may contain operational or sensitive data
 telemetry/*.log
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Pytest cache
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment/secrets
+.env
+.env.*
