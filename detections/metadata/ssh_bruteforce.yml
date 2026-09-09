@@ -1,0 +1,59 @@
+id: DET-SSH-001
+name: SSH Brute Force
+status: experimental
+version: 1
+
+description: >
+  Detects repeated failed SSH authentication attempts from the same
+  source IP within a defined time window.
+
+threat:
+  behavior: Repeated SSH authentication attempts against a host
+  objective: Obtain unauthorized access through credential guessing
+
+mitre_attack:
+  tactic:
+    - Credential Access
+  technique:
+    - id: T1110
+      name: Brute Force
+
+data_sources:
+  - source: OpenSSH
+    log_type: sshd authentication logs
+
+required_fields:
+  - timestamp
+  - source_ip
+  - auth_result
+
+detection:
+  type: threshold
+  threshold: 15
+  window_minutes: 10
+  group_by:
+    - source_ip
+
+severity: medium
+
+false_positives:
+  - Authorized vulnerability scanners
+  - Administrative testing
+  - Automation using outdated credentials
+  - Misconfigured services repeatedly attempting authentication
+
+validation:
+  positive_test: >
+    Generate at least 15 failed SSH authentication attempts from the same
+    source IP within 10 minutes.
+  negative_tests:
+    - Fewer than 15 failed authentication attempts
+    - Authentication failures spread outside the 10-minute window
+    - Authentication failures originating from different source IPs
+
+response:
+  - Review the source IP and affected destination
+  - Identify targeted usernames
+  - Determine whether authentication later succeeded
+  - Check whether the source is known or authorized
+  - Escalate if evidence suggests successful unauthorized access

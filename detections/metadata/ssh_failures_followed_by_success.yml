@@ -1,0 +1,64 @@
+id: DET-SSH-002
+name: SSH Failures Followed by Success
+status: experimental
+version: 1
+
+description: >
+  Detects repeated failed SSH authentication attempts followed by a
+  successful authentication from the same source IP for the same username.
+
+threat:
+  behavior: Failed authentication attempts followed by successful SSH access
+  objective: Identify possible credential guessing that resulted in access
+
+mitre_attack:
+  tactic:
+    - Credential Access
+  technique:
+    - id: T1110
+      name: Brute Force
+
+data_sources:
+  - source: OpenSSH
+    log_type: sshd authentication logs
+
+required_fields:
+  - timestamp
+  - source_ip
+  - username
+  - auth_result
+
+detection:
+  type: correlation
+  failure_threshold: 3
+  window_minutes: 10
+  correlation_fields:
+    - source_ip
+    - username
+  sequence:
+    - authentication_failure
+    - authentication_success
+
+severity: high
+
+false_positives:
+  - Legitimate user repeatedly entering the wrong password before authenticating
+  - Automated authentication using stale credentials before recovering
+  - Administrative testing
+
+validation:
+  positive_test: >
+    Generate three failed authentication events followed by a successful
+    authentication using the same source IP and username within the time window.
+  negative_tests:
+    - Successful authentication from a different source IP
+    - Successful authentication for a different username
+    - Successful authentication outside the correlation window
+    - Missing username values
+
+response:
+  - Confirm whether the successful authentication was expected
+  - Review the source IP reputation and ownership
+  - Examine subsequent activity from the authenticated session
+  - Review sudo, process execution, persistence, and network activity
+  - Escalate if the successful session appears unauthorized
