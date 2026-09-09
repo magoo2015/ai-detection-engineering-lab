@@ -71,3 +71,35 @@ def test_invalid_user_without_username():
     assert event["username"] is None
     assert event["source_ip"] == "203.0.113.11"
     assert event["source_port"] == "45002"
+
+def test_failed_password_authentication():
+    line = (
+        "Aug 25 10:18:00 detection-lab sshd[10005]: "
+        "Failed password for sysadmin from 203.0.113.50 port 45005 ssh2"
+    )
+
+    event = parse_ssh_event(line)
+
+    assert event["event_type"] == "authentication_failure"
+    assert event["auth_result"] == "failure"
+    assert event["auth_method"] == "password"
+    assert event["auth_stage"] == "preauth"
+    assert event["username"] == "sysadmin"
+    assert event["source_ip"] == "203.0.113.50"
+    assert event["source_port"] == "45005"
+
+def test_failed_publickey_authentication():
+    line = (
+        "Aug 25 10:18:30 detection-lab sshd[10006]: "
+        "Failed publickey for sysadmin from 203.0.113.50 port 45006 ssh2"
+    )
+
+    event = parse_ssh_event(line)
+
+    assert event["event_type"] == "authentication_failure"
+    assert event["auth_result"] == "failure"
+    assert event["auth_method"] == "publickey"
+    assert event["auth_stage"] == "preauth"
+    assert event["username"] == "sysadmin"
+    assert event["source_ip"] == "203.0.113.50"
+    assert event["source_port"] == "45006"

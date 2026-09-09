@@ -92,6 +92,68 @@ def parse_ssh_event(line):
         if "[preauth]" in message:
             event["auth_stage"] = "preauth"
 
+    elif message.startswith("Failed password"):
+        event["event_type"] = "authentication_failure"
+        event["auth_result"] = "failure"
+        event["auth_method"] = "password"
+        event["auth_stage"] = "preauth"
+
+        message_parts = message.split()
+
+        if "for" in message_parts:
+            for_index = message_parts.index("for")
+
+            if for_index + 1 < len(message_parts):
+                username = message_parts[for_index + 1]
+
+                if username == "invalid" and for_index + 3 < len(message_parts):
+                    username = message_parts[for_index + 3]
+
+                event["username"] = username
+
+        if "from" in message_parts:
+            from_index = message_parts.index("from")
+
+            if from_index + 1 < len(message_parts):
+                event["source_ip"] = message_parts[from_index + 1]
+
+        if "port" in message_parts:
+            port_index = message_parts.index("port")
+
+            if port_index + 1 < len(message_parts):
+                event["source_port"] = message_parts[port_index + 1]
+
+    elif message.startswith("Failed publickey"):
+        event["event_type"] = "authentication_failure"
+        event["auth_result"] = "failure"
+        event["auth_method"] = "publickey"
+        event["auth_stage"] = "preauth"
+
+        message_parts = message.split()
+
+        if "for" in message_parts:
+            for_index = message_parts.index("for")
+
+            if for_index + 1 < len(message_parts):
+                username = message_parts[for_index + 1]
+
+                if username == "invalid" and for_index + 3 < len(message_parts):
+                    username = message_parts[for_index + 3]
+
+                event["username"] = username
+
+        if "from" in message_parts:
+            from_index = message_parts.index("from")
+
+            if from_index + 1 < len(message_parts):
+                event["source_ip"] = message_parts[from_index + 1]
+
+        if "port" in message_parts:
+            port_index = message_parts.index("port")
+
+            if port_index + 1 < len(message_parts):
+                event["source_port"] = message_parts[port_index + 1]
+
     elif message.startswith("Accepted publickey"):
         event["event_type"] = "authentication_success"
         event["auth_result"] = "success"
