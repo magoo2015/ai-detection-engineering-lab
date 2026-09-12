@@ -6,7 +6,7 @@ The AI Detection Engineering Lab is a hands-on security engineering project desi
 
 The project is intentionally designed around a lightweight architecture that can operate on a single DigitalOcean VPS rather than relying on a traditional resource-heavy SIEM platform. The initial focus is building and understanding the core detection pipeline before introducing AI.
 
-The initial lifecycle is:
+The current lifecycle is:
 
 ```text
 Threat Behavior
@@ -20,9 +20,11 @@ Detection
 Detection Testing
       ↓
 Alert Generation
+      ↓
+Deterministic Investigation
 ```
 
-As the project matures, the pipeline will expand to include correlation, CI/CD, MITRE ATT&CK mapping, detection tuning, and AI-assisted investigation.
+As the project matures, the pipeline will expand to include correlation, CI/CD, detection tuning, and LLM-assisted investigation under `ai/`.
 
 ## Initial Threat Scenario
 
@@ -145,9 +147,37 @@ Event Normalization
 Detection Engine
        ↓
 Security Alerts
+       ↓
+Deterministic Investigation
 ```
 
 The normalization layer will eventually convert raw Linux events into a consistent security-event schema that detection logic can evaluate without depending directly on raw log formatting.
+
+The runtime pipeline for the first investigation-capable path is:
+
+```text
+Raw SSH logs
+       ↓
+Event Normalization
+       ↓
+Deterministic Detection (SSH failures followed by success)
+       ↓
+Deterministic Investigation packaging
+       ↓
+JSON investigation output
+```
+
+Investigation consumes structured alerts only. It packages analyst-oriented
+context (timeline, evidence summary, MITRE mapping, recommended checks,
+confidence, disposition placeholder, and preserved raw evidence). It must
+never call detection functions and must never decide whether an alert fires.
+
+Detection metadata YAML supplies MITRE ATT&CK mapping and recommended
+analyst checks so investigation does not duplicate those values.
+
+The empty `ai/` directory is reserved for future LLM augmentation of
+narrative investigation fields. External LLM APIs are intentionally not
+part of the current architecture.
 
 The architecture is expected to evolve toward:
 
@@ -166,14 +196,18 @@ Detection Testing
        ↓
 Alert Generation
        ↓
+Deterministic Investigation
+       ↓
 Event Correlation
        ↓
 Higher-Confidence Incident
        ↓
-AI-Assisted Investigation
+LLM-Assisted Investigation (ai/)
 ```
 
-AI will intentionally be introduced only after the underlying telemetry, normalization, detection, and testing pipeline works and is understood.
+LLM assistance will intentionally be introduced only after the underlying
+telemetry, normalization, detection, testing, and deterministic investigation
+pipeline works and is understood.
 
 ## Current Infrastructure Security Baseline
 
@@ -205,5 +239,5 @@ The architecture will follow several principles throughout development:
 3. **Telemetry before detection** — Detection logic should be based on an understanding of the underlying events.
 4. **Testing before trust** — Security controls and detections should be validated with positive and negative testing.
 5. **Correlation over isolated alerts** — Related security events should eventually contribute to higher-confidence incidents.
-6. **AI as augmentation** — AI should assist investigation and detection engineering rather than replace the underlying engineering process.
+6. **AI as augmentation** — Deterministic investigation packages alerts for analysts today. The `ai/` package is reserved for future LLM assistance that may enrich narrative fields only; AI must not replace detection engineering or decide whether detections fire.
 7. **Cost-conscious architecture** — New infrastructure and technologies should be introduced only when they solve a real project requirement.

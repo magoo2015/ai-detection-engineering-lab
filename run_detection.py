@@ -4,6 +4,7 @@ from pathlib import Path
 
 from normalization.ssh_parser import parse_ssh_event
 from detections.ssh_compromise import detect_ssh_compromise
+from investigation.build_investigation import build_investigation
 
 
 def load_events(log_path):
@@ -39,7 +40,11 @@ def main():
         print("No alerts detected.")
         return
 
-    print(json.dumps(alerts, indent=2))
+    investigations = [
+        build_investigation(alert) for alert in alerts
+    ]
+
+    print(json.dumps(investigations, indent=2))
 
 
 if __name__ == "__main__":
