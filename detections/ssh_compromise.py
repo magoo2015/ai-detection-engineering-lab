@@ -25,6 +25,12 @@ def detect_ssh_compromise(events, failure_threshold=3, window_minutes=10):
 
     for success_event in success_events:
         source_ip = success_event["source_ip"]
+        success_username = success_event.get("username")
+
+        # Do not correlate a successful authentication
+        # if we do not know which account authenticated.
+        if not success_username:
+            continue
 
         if source_ip not in failures_by_ip:
             continue
@@ -36,6 +42,12 @@ def detect_ssh_compromise(events, failure_threshold=3, window_minutes=10):
         prior_failures = []
 
         for failure_event in failures_by_ip[source_ip]:
+            failure_username = failure_event.get("username")
+
+            # Ignore failure events where the username is missing.
+            if not failure_username:
+                continue
+
             failure_time = datetime.fromisoformat(
                 failure_event["timestamp"].replace("Z", "+00:00")
             )
@@ -44,27 +56,34 @@ def detect_ssh_compromise(events, failure_threshold=3, window_minutes=10):
                 success_time - failure_time
             ).total_seconds() / 60
 
-            failure_username = failure_event.get("username")
-            success_username = success_event.get("username")
-
             same_username = (
-                failure_username is not None
-                and success_username is not None
-                and failure_username == success_username
+                failure_username == success_username
             )
 
             if same_username and 0 <= time_difference <= window_minutes:
                 prior_failures.append(failure_event)
 
+        prior_failures = sorted(
+            prior_failures,
+            key=lambda event: event["timestamp"],
+        )
+
         if len(prior_failures) >= failure_threshold:
             alerts.append(
                 {
                     "detection": "SSH_FAILURES_FOLLOWED_BY_SUCCESS",
+                    "severity": "high",
                     "source_ip": source_ip,
-                    "username": success_event.get("username"),
+                    "username": success_username,
                     "failure_count": len(prior_failures),
+                    "first_failure": prior_failures[0]["timestamp"],
+                    "last_failure": prior_failures[-1]["timestamp"],
                     "success_time": success_event["timestamp"],
                     "window_minutes": window_minutes,
+                    "evidence": {
+                        "failed_authentications": prior_failures,
+                        "successful_authentication": success_event,
+                    },
                 }
             )
 

@@ -36,10 +36,38 @@ def test_failures_followed_by_success():
     )
 
     assert len(alerts) == 1
-    assert alerts[0]["detection"] == "SSH_FAILURES_FOLLOWED_BY_SUCCESS"
-    assert alerts[0]["source_ip"] == "203.0.113.50"
-    assert alerts[0]["username"] == "admin"
-    assert alerts[0]["failure_count"] == 3
+
+    alert = alerts[0]
+
+    # Detection identity
+    assert alert["detection"] == "SSH_FAILURES_FOLLOWED_BY_SUCCESS"
+    assert alert["severity"] == "high"
+
+    # Correlation fields
+    assert alert["source_ip"] == "203.0.113.50"
+    assert alert["username"] == "admin"
+    assert alert["failure_count"] == 3
+
+    # Timeline
+    assert alert["first_failure"] == "2026-08-25T10:00:00Z"
+    assert alert["last_failure"] == "2026-08-25T10:02:00Z"
+    assert alert["success_time"] == "2026-08-25T10:03:00Z"
+    assert alert["window_minutes"] == 5
+
+    # Evidence
+    assert len(
+        alert["evidence"]["failed_authentications"]
+    ) == 3
+
+    assert (
+        alert["evidence"]["successful_authentication"]["auth_result"]
+        == "success"
+    )
+
+    assert (
+        alert["evidence"]["successful_authentication"]["username"]
+        == "admin"
+    )
 
 
 def test_success_from_different_source_ip_does_not_alert():
