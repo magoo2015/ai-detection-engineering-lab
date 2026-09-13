@@ -89,10 +89,11 @@ def _likely_attack_behavior():
     )
 
 
-def _confidence(evidence_complete):
+def _evidence_completeness(evidence_complete):
+    """Whether expected evidence is present — not malice confidence."""
     if evidence_complete:
-        return "medium"
-    return "low"
+        return "complete"
+    return "incomplete"
 
 
 def build_investigation(alert):
@@ -122,7 +123,7 @@ def build_investigation(alert):
         "likely_attack_behavior": _likely_attack_behavior(),
         "mitre_attack": metadata.get("mitre_attack"),
         "recommended_analyst_checks": metadata.get("response"),
-        "confidence": _confidence(evidence_complete),
+        "evidence_completeness": _evidence_completeness(evidence_complete),
         "disposition": None,
         "raw_evidence": raw_evidence,
     }

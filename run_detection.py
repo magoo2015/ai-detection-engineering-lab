@@ -5,6 +5,7 @@ from pathlib import Path
 from normalization.ssh_parser import parse_ssh_event
 from detections.ssh_compromise import detect_ssh_compromise
 from investigation.build_investigation import build_investigation
+from ai.assist import attach_ai_assistance
 
 
 def load_events(log_path):
@@ -40,8 +41,10 @@ def main():
         print("No alerts detected.")
         return
 
+    # provider=None keeps AI disabled; StubProvider can be passed for offline demos.
     investigations = [
-        build_investigation(alert) for alert in alerts
+        attach_ai_assistance(build_investigation(alert), provider=None)
+        for alert in alerts
     ]
 
     print(json.dumps(investigations, indent=2))

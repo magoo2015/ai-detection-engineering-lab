@@ -94,12 +94,13 @@ def test_recommended_analyst_checks_from_yaml():
     assert any("source IP" in check for check in checks)
 
 
-def test_medium_confidence_with_complete_evidence():
+def test_complete_evidence_completeness():
     investigation = build_investigation(_complete_compromise_alert())
-    assert investigation["confidence"] == "medium"
+    assert investigation["evidence_completeness"] == "complete"
+    assert "confidence" not in investigation
 
 
-def test_low_confidence_with_incomplete_evidence():
+def test_incomplete_evidence_completeness():
     alert = _complete_compromise_alert()
     alert["evidence"] = {
         "failed_authentications": [],
@@ -110,13 +111,13 @@ def test_low_confidence_with_incomplete_evidence():
     }
 
     investigation = build_investigation(alert)
-    assert investigation["confidence"] == "low"
+    assert investigation["evidence_completeness"] == "incomplete"
 
     alert_missing = _complete_compromise_alert()
     del alert_missing["evidence"]
 
     investigation_missing = build_investigation(alert_missing)
-    assert investigation_missing["confidence"] == "low"
+    assert investigation_missing["evidence_completeness"] == "incomplete"
     assert investigation_missing["raw_evidence"] is None
 
 
