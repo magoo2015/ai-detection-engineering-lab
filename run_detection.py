@@ -31,11 +31,11 @@ def main():
 
     events = load_events(log_path)
 
-    alerts = detect_ssh_compromise(
-        events,
-        failure_threshold=3,
-        window_minutes=5,
-    )
+    # Use detector runtime defaults (not test/lab overrides).
+    # Broadening from a prior 5-minute CLI override to the 10-minute default
+    # may correlate successes that fall more than 5 but no more than 10
+    # minutes after qualifying failures.
+    alerts = detect_ssh_compromise(events)
 
     if not alerts:
         print("No alerts detected.")

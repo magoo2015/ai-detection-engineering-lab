@@ -4,9 +4,10 @@ from investigation.build_investigation import build_investigation
 
 
 def _complete_compromise_alert():
+    # Raw alerts no longer carry severity; any severity key on an alert fixture
+    # is non-authoritative and must be ignored by investigation packaging.
     return {
         "detection": "SSH_FAILURES_FOLLOWED_BY_SUCCESS",
-        "severity": "high",
         "source_ip": "203.0.113.50",
         "username": "admin",
         "failure_count": 3,
@@ -49,6 +50,7 @@ def test_complete_compromise_alert_investigation():
     alert = _complete_compromise_alert()
     investigation = build_investigation(alert)
 
+    assert investigation["detection_id"] == "DET-SSH-002"
     assert investigation["detection"] == "SSH_FAILURES_FOLLOWED_BY_SUCCESS"
     assert investigation["severity"] == "high"
     assert investigation["source_ip"] == "203.0.113.50"
@@ -62,7 +64,7 @@ def test_complete_compromise_alert_investigation():
     ]
 
 
-def test_pass_through_fields():
+def test_severity_comes_from_metadata_not_alert():
     alert = _complete_compromise_alert()
     alert["severity"] = "critical"
     alert["source_ip"] = "198.51.100.10"
@@ -70,7 +72,9 @@ def test_pass_through_fields():
 
     investigation = build_investigation(alert)
 
-    assert investigation["severity"] == "critical"
+    # Severity is owned by metadata YAML; raw alert severity is ignored.
+    assert investigation["severity"] == "high"
+    assert investigation["detection_id"] == "DET-SSH-002"
     assert investigation["source_ip"] == "198.51.100.10"
     assert investigation["username"] == "sysadmin"
     assert investigation["detection"] == alert["detection"]

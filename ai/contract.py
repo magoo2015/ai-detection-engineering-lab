@@ -35,6 +35,7 @@ CONTENT_REQUIRED_KEYS = frozenset(
 # Fields that AI output must never set or attempt to override.
 FORBIDDEN_AUTHORITATIVE_KEYS = frozenset(
     {
+        "detection_id",
         "detection",
         "severity",
         "source_ip",
@@ -53,6 +54,7 @@ FORBIDDEN_AUTHORITATIVE_KEYS = frozenset(
 
 DETERMINISTIC_INVESTIGATION_KEYS = frozenset(
     {
+        "detection_id",
         "detection",
         "severity",
         "source_ip",

@@ -1,7 +1,15 @@
 from datetime import datetime
 
 
-def detect_ssh_compromise(events, failure_threshold=3, window_minutes=10):
+DEFAULT_FAILURE_THRESHOLD = 3
+DEFAULT_WINDOW_MINUTES = 10
+
+
+def detect_ssh_compromise(
+    events,
+    failure_threshold=DEFAULT_FAILURE_THRESHOLD,
+    window_minutes=DEFAULT_WINDOW_MINUTES,
+):
     failures_by_ip = {}
     success_events = []
 
@@ -72,7 +80,6 @@ def detect_ssh_compromise(events, failure_threshold=3, window_minutes=10):
             alerts.append(
                 {
                     "detection": "SSH_FAILURES_FOLLOWED_BY_SUCCESS",
-                    "severity": "high",
                     "source_ip": source_ip,
                     "username": success_username,
                     "failure_count": len(prior_failures),

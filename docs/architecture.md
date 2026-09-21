@@ -186,6 +186,35 @@ confidence that activity is malicious.
 Detection metadata YAML supplies MITRE ATT&CK mapping and recommended
 analyst checks so investigation does not duplicate those values.
 
+### Detection configuration ownership
+
+Configuration and descriptive metadata have separate owners so runtime
+behavior cannot silently drift from catalog documentation:
+
+* **Python detection code** owns execution behavior: the correlation
+  algorithm and runtime defaults for thresholds and time windows
+  (`DEFAULT_*` constants used as function defaults).
+* **Metadata YAML** owns descriptive/catalog fields: stable detection ID,
+  human-readable name, severity, MITRE ATT&CK mapping, and analyst
+  response guidance. YAML may document threshold/window values as mirrors
+  of the Python defaults for human readers and consistency checks; detectors
+  do **not** load YAML to decide whether an alert fires.
+* **Tests** may explicitly override thresholds and windows for controlled
+  positive/negative scenarios. Those overrides are not the production
+  runtime source of truth.
+* **AI** is advisory only and never configuration authority. It must not
+  set or change detection IDs, severity, thresholds, windows, MITRE
+  mappings, or response guidance.
+
+Investigation packages severity and `detection_id` from metadata YAML.
+Runtime detection keys (for example `SSH_FAILURES_FOLLOWED_BY_SUCCESS`)
+remain the Python alert identity used to select the matching metadata file.
+
+Changing the runtime correlation window (for example from a prior
+test-style 5-minute CLI override to the 10-minute Python default)
+**broadens** the window: successes more than 5 but no more than 10 minutes
+after qualifying failures may now correlate where they previously did not.
+
 ### Optional AI assistance (`ai/`)
 
 After deterministic investigation, an optional advisory layer may attach a
@@ -222,7 +251,9 @@ status of `unavailable`, `error`, or `rejected`.
 * Detection fire / no-fire decisions and alert generation
 * Deterministic investigation packaging
 * Evidence preserved under `raw_evidence` (as recorded by detection)
-* MITRE mappings and recommended checks from detection metadata YAML
+* Detection ID, severity, MITRE mappings, and recommended checks from
+  detection metadata YAML
+* Runtime threshold and window defaults from Python detection constants
 * `evidence_completeness` (evidence presence only)
 
 **UNTRUSTED**

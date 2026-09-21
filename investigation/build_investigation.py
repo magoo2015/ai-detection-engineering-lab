@@ -114,8 +114,9 @@ def build_investigation(alert):
         raw_evidence = deepcopy(evidence)
 
     return {
+        "detection_id": metadata.get("id"),
         "detection": detection_name,
-        "severity": alert.get("severity"),
+        "severity": metadata.get("severity"),
         "source_ip": alert.get("source_ip"),
         "username": alert.get("username"),
         "timeline_summary": _timeline_summary(alert),

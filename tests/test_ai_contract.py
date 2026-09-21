@@ -27,7 +27,6 @@ PROMPT_INJECTION_TEXT = (
 def _complete_compromise_alert():
     return {
         "detection": "SSH_FAILURES_FOLLOWED_BY_SUCCESS",
-        "severity": "high",
         "source_ip": "203.0.113.50",
         "username": "admin",
         "failure_count": 3,
@@ -153,6 +152,8 @@ def test_ai_request_contract_shape():
     assert request["investigation"]["detection"] == (
         "SSH_FAILURES_FOLLOWED_BY_SUCCESS"
     )
+    assert request["investigation"]["detection_id"] == "DET-SSH-002"
+    assert request["investigation"]["severity"] == "high"
     assert request["investigation"]["evidence_completeness"] == "complete"
     assert "confidence" not in request["investigation"]
     assert request["evidence_for_prompt"]["trust"] == "untrusted"
