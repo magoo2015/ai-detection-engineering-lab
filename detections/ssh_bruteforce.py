@@ -26,7 +26,16 @@ def group_events_by_source_ip(events):
 
     return grouped_events
 
-def detect_ssh_bruteforce(events, threshold=15, window_minutes=10):
+
+DEFAULT_THRESHOLD = 15
+DEFAULT_WINDOW_MINUTES = 10
+
+
+def detect_ssh_bruteforce(
+    events,
+    threshold=DEFAULT_THRESHOLD,
+    window_minutes=DEFAULT_WINDOW_MINUTES,
+):
     failed_events = get_failed_ssh_events(events)
     grouped_events = group_events_by_source_ip(failed_events)
 

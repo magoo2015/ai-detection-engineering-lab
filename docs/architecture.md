@@ -6,7 +6,7 @@ The AI Detection Engineering Lab is a hands-on security engineering project desi
 
 The project is intentionally designed around a lightweight architecture that can operate on a single DigitalOcean VPS rather than relying on a traditional resource-heavy SIEM platform. The initial focus is building and understanding the core detection pipeline before introducing AI.
 
-The initial lifecycle is:
+The current lifecycle is:
 
 ```text
 Threat Behavior
@@ -20,9 +20,13 @@ Detection
 Detection Testing
       ↓
 Alert Generation
+      ↓
+Deterministic Investigation
+      ↓
+Optional AI Assistance (advisory)
 ```
 
-As the project matures, the pipeline will expand to include correlation, CI/CD, MITRE ATT&CK mapping, detection tuning, and AI-assisted investigation.
+As the project matures, the pipeline will expand to include correlation, CI/CD, detection tuning, and real LLM providers behind the same `ai/` contract.
 
 ## Initial Threat Scenario
 
@@ -145,9 +149,127 @@ Event Normalization
 Detection Engine
        ↓
 Security Alerts
+       ↓
+Deterministic Investigation
+       ↓
+Optional AI Assistance (advisory)
 ```
 
 The normalization layer will eventually convert raw Linux events into a consistent security-event schema that detection logic can evaluate without depending directly on raw log formatting.
+
+The runtime pipeline for the first investigation-capable path is:
+
+```text
+Raw SSH logs
+       ↓
+Event Normalization
+       ↓
+Deterministic Detection (SSH failures followed by success)
+       ↓
+Deterministic Investigation packaging
+       ↓
+Optional AI assistance (advisory; provider=None disables)
+       ↓
+JSON investigation output
+```
+
+Investigation consumes structured alerts only. It packages analyst-oriented
+context (timeline, evidence summary, MITRE mapping, recommended checks,
+`evidence_completeness`, disposition placeholder, and preserved raw
+evidence). It must never call detection functions and must never decide
+whether an alert fires.
+
+`evidence_completeness` is `"complete"` or `"incomplete"` and describes
+whether expected evidence is present. It must never be interpreted as
+confidence that activity is malicious.
+
+Detection metadata YAML supplies MITRE ATT&CK mapping and recommended
+analyst checks so investigation does not duplicate those values.
+
+### Detection configuration ownership
+
+Configuration and descriptive metadata have separate owners so runtime
+behavior cannot silently drift from catalog documentation:
+
+* **Python detection code** owns execution behavior: the correlation
+  algorithm and runtime defaults for thresholds and time windows
+  (`DEFAULT_*` constants used as function defaults).
+* **Metadata YAML** owns descriptive/catalog fields: stable detection ID,
+  human-readable name, severity, MITRE ATT&CK mapping, and analyst
+  response guidance. YAML may document threshold/window values as mirrors
+  of the Python defaults for human readers and consistency checks; detectors
+  do **not** load YAML to decide whether an alert fires.
+* **Tests** may explicitly override thresholds and windows for controlled
+  positive/negative scenarios. Those overrides are not the production
+  runtime source of truth.
+* **AI** is advisory only and never configuration authority. It must not
+  set or change detection IDs, severity, thresholds, windows, MITRE
+  mappings, or response guidance.
+
+Investigation packages severity and `detection_id` from metadata YAML.
+Runtime detection keys (for example `SSH_FAILURES_FOLLOWED_BY_SUCCESS`)
+remain the Python alert identity used to select the matching metadata file.
+
+Changing the runtime correlation window (for example from a prior
+test-style 5-minute CLI override to the 10-minute Python default)
+**broadens** the window: successes more than 5 but no more than 10 minutes
+after qualifying failures may now correlate where they previously did not.
+
+### Optional AI assistance (`ai/`)
+
+After deterministic investigation, an optional advisory layer may attach a
+nested `ai_assistance` object. AI must never modify or replace
+deterministic fields. Provenance is explicit:
+
+* deterministic investigation fields = authoritative facts/packaging
+* `ai_assistance` = advisory only (after validation)
+
+External LLM APIs are intentionally not part of the current architecture.
+The contract phase uses `StubProvider` for offline deterministic tests.
+`provider=None` disables AI; the deterministic investigation still returns.
+
+AI output may include: `analyst_summary`, `why_suspicious`, `hypotheses`,
+`investigation_pivots`, `analyst_questions`, `evidence_to_collect_next`,
+and `suggested_false_positive_checks`. Hypothesis confidence lives only
+under `ai_assistance.content.hypotheses[].confidence` (`low` /
+`medium` / `high`). Every hypothesis must have `status = "unconfirmed"`.
+AI must not recommend, assign, or modify disposition.
+
+Raw evidence strings are sanitized before prompting: structured fields are
+preferred; `raw_message` is treated as untrusted, control characters are
+stripped, content is truncated (max 512 characters), and delimited as
+untrusted evidence.
+
+If AI is disabled, unavailable, invalid, or raises an exception, the
+deterministic investigation is still returned with an `ai_assistance`
+status of `unavailable`, `error`, or `rejected`.
+
+### Trust boundaries
+
+**AUTHORITATIVE**
+
+* Detection fire / no-fire decisions and alert generation
+* Deterministic investigation packaging
+* Evidence preserved under `raw_evidence` (as recorded by detection)
+* Detection ID, severity, MITRE mappings, and recommended checks from
+  detection metadata YAML
+* Runtime threshold and window defaults from Python detection constants
+* `evidence_completeness` (evidence presence only)
+
+**UNTRUSTED**
+
+* Raw evidence strings such as `raw_message` (attacker-controlled log text)
+* External AI provider responses before validation
+* Any free-text content inside untrusted delimiters
+
+**ADVISORY**
+
+* Validated `ai_assistance` content only
+
+**HUMAN OWNED**
+
+* Final disposition (`disposition` remains null until set by a human/workflow)
+* Containment and response decisions
 
 The architecture is expected to evolve toward:
 
@@ -166,14 +288,18 @@ Detection Testing
        ↓
 Alert Generation
        ↓
+Deterministic Investigation
+       ↓
 Event Correlation
        ↓
 Higher-Confidence Incident
        ↓
-AI-Assisted Investigation
+LLM-Assisted Investigation (ai/; advisory only)
 ```
 
-AI will intentionally be introduced only after the underlying telemetry, normalization, detection, and testing pipeline works and is understood.
+A real LLM provider may be added later behind the same provider interface
+without changing detection code. No agent framework, vector database, or
+autonomous response is part of this design.
 
 ## Current Infrastructure Security Baseline
 
@@ -205,5 +331,5 @@ The architecture will follow several principles throughout development:
 3. **Telemetry before detection** — Detection logic should be based on an understanding of the underlying events.
 4. **Testing before trust** — Security controls and detections should be validated with positive and negative testing.
 5. **Correlation over isolated alerts** — Related security events should eventually contribute to higher-confidence incidents.
-6. **AI as augmentation** — AI should assist investigation and detection engineering rather than replace the underlying engineering process.
+6. **AI as augmentation** — Deterministic investigation packages alerts for analysts. Optional AI assistance attaches a nested `ai_assistance` object and must never modify deterministic fields, decide whether detections fire, change severity/MITRE/evidence, or assign disposition.
 7. **Cost-conscious architecture** — New infrastructure and technologies should be introduced only when they solve a real project requirement.

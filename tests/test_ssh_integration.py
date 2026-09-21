@@ -1,29 +1,19 @@
+from pathlib import Path
+
 from normalization.ssh_parser import parse_ssh_event
 from detections.ssh_compromise import detect_ssh_compromise
 
 
 def test_raw_ssh_logs_trigger_compromise_detection():
-    raw_logs = [
-        (
-            "Aug 25 10:00:00 detection-lab sshd[20001]: "
-            "Failed publickey for sysadmin from 203.0.113.50 port 45001 ssh2"
-        ),
-        (
-            "Aug 25 10:01:00 detection-lab sshd[20002]: "
-            "Failed publickey for sysadmin from 203.0.113.50 port 45002 ssh2"
-        ),
-        (
-            "Aug 25 10:02:00 detection-lab sshd[20003]: "
-            "Failed publickey for sysadmin from 203.0.113.50 port 45003 ssh2"
-        ),
-        (
-            "Aug 25 10:03:00 detection-lab sshd[20004]: "
-            "Accepted publickey for sysadmin from 203.0.113.50 "
-            "port 45004 ssh2: ED25519 SHA256:TESTFINGERPRINT"
-        ),
-    ]
+    fixture_path = Path("tests/fixtures_ssh_compromise.log")
 
-    events = [parse_ssh_event(line) for line in raw_logs]
+    raw_logs = fixture_path.read_text().splitlines()
+
+    events = [
+        parse_ssh_event(line)
+        for line in raw_logs
+        if line.strip()
+    ]
 
     alerts = detect_ssh_compromise(
         events,
