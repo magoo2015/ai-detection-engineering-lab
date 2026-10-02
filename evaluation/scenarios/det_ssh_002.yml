@@ -1,0 +1,319 @@
+- id: DET-SSH-002-S01
+  detector_id: DET-SSH-002
+  description: Three failed password authentications followed by a success from the same source IP for the same username within 10 minutes.
+  ground_truth: malicious
+  scope: in_scope
+  expected_alert: true
+  notes: 'Baseline true positive at the exact correlation threshold: 3 same-IP, same-user failures
+    precede a success 3 minutes after the first failure, inside the 10-minute window.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.60
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.60
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.60
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:03:00Z'
+    auth_result: success
+    source_ip: 203.0.113.60
+    username: admin
+    auth_method: password
+- id: DET-SSH-002-S02
+  detector_id: DET-SSH-002
+  description: Five failed password authentications followed by a success from the same source IP for the same username.
+  ground_truth: malicious
+  scope: in_scope
+  expected_alert: true
+  notes: True positive above threshold; confirms alerting continues when failure volume exceeds 3 before
+    the successful credential guess.
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.61
+    username: root
+    auth_method: password
+  - timestamp: '2026-08-25T10:00:45Z'
+    auth_result: failure
+    source_ip: 203.0.113.61
+    username: root
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:30Z'
+    auth_result: failure
+    source_ip: 203.0.113.61
+    username: root
+    auth_method: password
+  - timestamp: '2026-08-25T10:02:15Z'
+    auth_result: failure
+    source_ip: 203.0.113.61
+    username: root
+    auth_method: password
+  - timestamp: '2026-08-25T10:03:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.61
+    username: root
+    auth_method: password
+  - timestamp: '2026-08-25T10:04:00Z'
+    auth_result: success
+    source_ip: 203.0.113.61
+    username: root
+    auth_method: password
+- id: DET-SSH-002-S03
+  detector_id: DET-SSH-002
+  description: Two failed password authentications followed by a successful credential guess from the same source IP for the same username.
+  ground_truth: malicious
+  scope: in_scope
+  expected_alert: false
+  notes: 'Intended false negative caused by threshold: the attacker guesses the password on the third
+    attempt, leaving only 2 prior failures, one below the configured failure threshold of 3.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.62
+    username: ubuntu
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.62
+    username: ubuntu
+    auth_method: password
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: success
+    source_ip: 203.0.113.62
+    username: ubuntu
+    auth_method: password
+- id: DET-SSH-002-S04
+  detector_id: DET-SSH-002
+  description: Three failed password authentications followed by a success outside the 10-minute correlation window.
+  ground_truth: malicious
+  scope: in_scope
+  expected_alert: false
+  notes: 'Intended false negative caused by correlation window: failures at 10:00-10:02 and the success
+    at 10:20 are 18-20 minutes apart, so no failure falls within the 10-minute window. Models a patient
+    attacker who pauses before using guessed credentials.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.63
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.63
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.63
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:20:00Z'
+    auth_result: success
+    source_ip: 203.0.113.63
+    username: admin
+    auth_method: password
+- id: DET-SSH-002-S05
+  detector_id: DET-SSH-002
+  description: Legitimate user mistypes their password three times and then successfully authenticates.
+  ground_truth: benign
+  scope: in_scope
+  expected_alert: true
+  notes: 'Intended false positive: a legitimate user from an internal address produces the same failure-then-success
+    sequence as a successful credential guess. Listed as a known false positive in the detection metadata.'
+  events:
+  - timestamp: '2026-08-25T09:00:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.15
+    username: alice
+    auth_method: password
+  - timestamp: '2026-08-25T09:00:20Z'
+    auth_result: failure
+    source_ip: 198.51.100.15
+    username: alice
+    auth_method: password
+  - timestamp: '2026-08-25T09:00:45Z'
+    auth_result: failure
+    source_ip: 198.51.100.15
+    username: alice
+    auth_method: password
+  - timestamp: '2026-08-25T09:01:10Z'
+    auth_result: success
+    source_ip: 198.51.100.15
+    username: alice
+    auth_method: password
+- id: DET-SSH-002-S06
+  detector_id: DET-SSH-002
+  description: Failures against one username followed by a success for a different username from the same source IP.
+  ground_truth: benign
+  scope: in_scope
+  expected_alert: false
+  notes: 'Identity-correlation protection: failures for admin and a success for deploy do not share a
+    username, so the failure-then-success hypothesis is not met for any single account.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:03:00Z'
+    auth_result: success
+    source_ip: 198.51.100.20
+    username: deploy
+    auth_method: password
+- id: DET-SSH-002-S07
+  detector_id: DET-SSH-002
+  description: Failures and a success for the same username but from different source IPs.
+  ground_truth: benign
+  scope: in_scope
+  expected_alert: false
+  notes: 'Source-IP correlation protection: failures for admin come from 203.0.113.64 while the success
+    for admin comes from 198.51.100.25, so the events do not share a source relationship.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.64
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.64
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.64
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:03:00Z'
+    auth_result: success
+    source_ip: 198.51.100.25
+    username: admin
+    auth_method: password
+- id: DET-SSH-002-S08
+  detector_id: DET-SSH-002
+  description: Failure-then-success sequences where username evidence is unavailable on either the failures or the success.
+  ground_truth: benign
+  scope: in_scope
+  expected_alert: false
+  notes: 'Insufficient correlation evidence: on 203.0.113.65 the failures have no username before a success
+    for admin; on 203.0.113.66 the failures are for admin but the success has no username. An unknown
+    username must never be treated as the same username, so neither sequence may correlate.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.65
+    username: null
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.65
+    username: null
+    auth_method: password
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.65
+    username: null
+    auth_method: password
+  - timestamp: '2026-08-25T10:03:00Z'
+    auth_result: success
+    source_ip: 203.0.113.65
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.66
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.66
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.66
+    username: admin
+    auth_method: password
+  - timestamp: '2026-08-25T10:03:00Z'
+    auth_result: success
+    source_ip: 203.0.113.66
+    username: null
+    auth_method: password
+- id: DET-SSH-002-S09
+  detector_id: DET-SSH-002
+  description: Successful authentication occurs before the failed authentications from the same source IP for the same username.
+  ground_truth: benign
+  scope: in_scope
+  expected_alert: false
+  notes: 'Invalid sequence for this hypothesis: the success at 10:00 precedes the failures at 10:01-10:03,
+    so the failures cannot have led to the access. Confirms ordering is enforced, not just co-occurrence.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: success
+    source_ip: 198.51.100.30
+    username: bob
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.30
+    username: bob
+    auth_method: password
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.30
+    username: bob
+    auth_method: password
+  - timestamp: '2026-08-25T10:03:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.30
+    username: bob
+    auth_method: password
+- id: DET-SSH-002-S10
+  detector_id: DET-SSH-002
+  description: Three failed password authentications followed by a successful public-key authentication from the same source IP for the same username.
+  ground_truth: benign
+  scope: in_scope
+  expected_alert: true
+  notes: 'Authentication-method challenge: a user fails password auth three times, then falls back to
+    their SSH key and succeeds. Public-key success does not indicate a guessed password, so this is
+    benign. DET-SSH-002 does not consider auth_method, so it is expected to alert. This scenario evaluates
+    whether correlation across authentication methods creates analyst noise.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.35
+    username: sysadmin
+    auth_method: password
+  - timestamp: '2026-08-25T10:00:30Z'
+    auth_result: failure
+    source_ip: 198.51.100.35
+    username: sysadmin
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.35
+    username: sysadmin
+    auth_method: password
+  - timestamp: '2026-08-25T10:01:30Z'
+    auth_result: success
+    source_ip: 198.51.100.35
+    username: sysadmin
+    auth_method: publickey

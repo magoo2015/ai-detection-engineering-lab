@@ -1,6 +1,7 @@
 """Run evaluation scenarios against existing detectors."""
 
 from detections.ssh_bruteforce import detect_ssh_bruteforce
+from detections.ssh_compromise import detect_ssh_compromise
 
 from evaluation.loader import SUPPORTED_DETECTOR_IDS
 
@@ -12,6 +13,8 @@ class UnsupportedDetectorError(ValueError):
 def _run_detector(detector_id, events):
     if detector_id == "DET-SSH-001":
         return detect_ssh_bruteforce(events)
+    if detector_id == "DET-SSH-002":
+        return detect_ssh_compromise(events)
 
     raise UnsupportedDetectorError(
         f"Unsupported detector_id {detector_id!r}; "

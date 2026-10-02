@@ -4,6 +4,7 @@ import yaml
 from evaluation.loader import (
     ScenarioValidationError,
     default_det_ssh_001_scenarios_path,
+    default_det_ssh_002_scenarios_path,
     load_scenarios,
     validate_scenario,
 )
@@ -61,6 +62,21 @@ def test_load_bundled_det_ssh_001_corpus():
         "DET-SSH-001-S07",
         "DET-SSH-001-S08",
     ]
+
+
+def test_validate_scenario_accepts_det_ssh_002():
+    scenario = _valid_scenario(id="DET-SSH-002-TEST", detector_id="DET-SSH-002")
+
+    assert validate_scenario(scenario) is scenario
+
+
+def test_load_bundled_det_ssh_002_corpus():
+    scenarios = load_scenarios(default_det_ssh_002_scenarios_path())
+
+    assert [s["id"] for s in scenarios] == [
+        f"DET-SSH-002-S{index:02d}" for index in range(1, 11)
+    ]
+    assert all(s["detector_id"] == "DET-SSH-002" for s in scenarios)
 
 
 def test_invalid_ground_truth_rejected():

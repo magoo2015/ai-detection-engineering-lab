@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-SUPPORTED_DETECTOR_IDS = frozenset({"DET-SSH-001"})
+SUPPORTED_DETECTOR_IDS = frozenset({"DET-SSH-001", "DET-SSH-002"})
 VALID_GROUND_TRUTH = frozenset({"malicious", "benign"})
 VALID_SCOPES = frozenset({"in_scope", "limitation"})
 
@@ -122,3 +122,8 @@ def load_scenarios(path):
 def default_det_ssh_001_scenarios_path():
     """Return the path to the bundled DET-SSH-001 scenario corpus."""
     return Path(__file__).resolve().parent / "scenarios" / "det_ssh_001.yml"
+
+
+def default_det_ssh_002_scenarios_path():
+    """Return the path to the bundled DET-SSH-002 scenario corpus."""
+    return Path(__file__).resolve().parent / "scenarios" / "det_ssh_002.yml"

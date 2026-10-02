@@ -1,3 +1,4 @@
+from evaluation.loader import default_det_ssh_002_scenarios_path, load_scenarios
 from evaluation.runner import run_scenario, run_scenarios
 
 
@@ -141,3 +142,63 @@ def test_run_scenarios_returns_one_result_per_scenario():
     assert [result["scenario_id"] for result in results] == ["one", "two"]
     assert results[0]["classification"] == "TP"
     assert results[1]["classification"] == "TN"
+
+
+def _ssh_002_events(failures, source_ip="203.0.113.50", username="admin"):
+    events = [
+        {
+            "timestamp": f"2026-08-25T10:{index:02d}:00Z",
+            "auth_result": "failure",
+            "source_ip": source_ip,
+            "username": username,
+        }
+        for index in range(failures)
+    ]
+    events.append(
+        {
+            "timestamp": f"2026-08-25T10:{failures:02d}:00Z",
+            "auth_result": "success",
+            "source_ip": source_ip,
+            "username": username,
+        }
+    )
+    return events
+
+
+def test_det_ssh_002_dispatch_classifies_true_positive():
+    result = run_scenario(
+        _scenario(
+            detector_id="DET-SSH-002",
+            ground_truth="malicious",
+            expected_alert=True,
+            events=_ssh_002_events(3),
+        )
+    )
+
+    assert result["detector_id"] == "DET-SSH-002"
+    assert result["observed_alert"] is True
+    assert result["behavior_matched"] is True
+    assert result["classification"] == "TP"
+    assert result["alerts"][0]["detection"] == "SSH_FAILURES_FOLLOWED_BY_SUCCESS"
+
+
+def test_det_ssh_002_dispatch_classifies_false_negative():
+    result = run_scenario(
+        _scenario(
+            detector_id="DET-SSH-002",
+            ground_truth="malicious",
+            expected_alert=False,
+            events=_ssh_002_events(2),
+        )
+    )
+
+    assert result["observed_alert"] is False
+    assert result["behavior_matched"] is True
+    assert result["classification"] == "FN"
+
+
+def test_bundled_det_ssh_002_corpus_matches_expected_behavior():
+    results = run_scenarios(load_scenarios(default_det_ssh_002_scenarios_path()))
+
+    mismatched = [r["scenario_id"] for r in results if not r["behavior_matched"]]
+    assert mismatched == []
