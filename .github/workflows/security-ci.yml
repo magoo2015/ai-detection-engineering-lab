@@ -1,0 +1,55 @@
+name: Security CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      GITLEAKS_VERSION: "8.30.1"
+
+    steps:
+      - name: Check out repository (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Gitleaks (pinned, checksum-verified)
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          tarball="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          checksums="gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+          cd "${RUNNER_TEMP}"
+          curl -fsSLO "${base_url}/${tarball}"
+          curl -fsSLO "${base_url}/${checksums}"
+          grep " ${tarball}\$" "${checksums}" > tarball.sha256
+          sha256sum --check --strict tarball.sha256
+          tar -xzf "${tarball}" gitleaks
+          ./gitleaks version
+
+      - name: Scan full git history for secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          "${RUNNER_TEMP}/gitleaks" git \
+            --redact \
+            --verbose \
+            --no-banner \
+            --ignore-gitleaks-allow \
+            --exit-code 1 \
+            .
