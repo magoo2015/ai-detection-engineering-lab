@@ -1,0 +1,1 @@
+"""Detection quality evaluation framework."""

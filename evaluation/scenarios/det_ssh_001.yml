@@ -1,0 +1,572 @@
+- id: DET-SSH-001-S01
+  detector_id: DET-SSH-001
+  description: 15 failed authentications from one attacker IP inside a 10-minute window.
+  ground_truth: malicious
+  scope: in_scope
+  expected_alert: true
+  notes: Baseline true positive at the exact detection threshold (15 failures / 10 minutes).
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:00:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:01:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:02:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:03:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:04:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:04:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:05:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:06:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:06:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:07:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:08:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:08:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+  - timestamp: '2026-08-25T10:09:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.10
+    username: root
+- id: DET-SSH-001-S02
+  detector_id: DET-SSH-001
+  description: 20 failed authentications from one attacker IP inside a 10-minute window.
+  ground_truth: malicious
+  scope: in_scope
+  expected_alert: true
+  notes: True positive above threshold; confirms alerting continues when volume exceeds 15.
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:00:25Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:00:50Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:01:15Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:01:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:02:05Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:02:30Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:02:55Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:03:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:03:45Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:04:10Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:04:35Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:05:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:05:25Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:05:50Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:06:15Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:06:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:07:05Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:07:30Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+  - timestamp: '2026-08-25T10:07:55Z'
+    auth_result: failure
+    source_ip: 203.0.113.20
+    username: admin
+- id: DET-SSH-001-S03
+  detector_id: DET-SSH-001
+  description: 14 failed authentications from one attacker IP inside a 10-minute window.
+  ground_truth: malicious
+  scope: in_scope
+  expected_alert: false
+  notes: 'Intended false negative: attack volume is one below the configured threshold of 15.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:00:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:01:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:02:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:03:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:04:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:04:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:05:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:06:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:06:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:07:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:08:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+  - timestamp: '2026-08-25T10:08:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.30
+    username: ubuntu
+- id: DET-SSH-001-S04
+  detector_id: DET-SSH-001
+  description: 15 failed authentications from one attacker IP spread outside the 10-minute detection window.
+  ground_truth: malicious
+  scope: in_scope
+  expected_alert: false
+  notes: 'Intended false negative exposing low-and-slow weakness: 15 failures spaced 5 minutes apart so
+    no 15-event window fits in 10 minutes.'
+  events:
+  - timestamp: '2026-08-25T12:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:05:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:10:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:15:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:20:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:25:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:30:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:35:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:40:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:45:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:50:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T12:55:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T13:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T13:05:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+  - timestamp: '2026-08-25T13:10:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.40
+    username: root
+- id: DET-SSH-001-S05
+  detector_id: DET-SSH-001
+  description: Two accidental authentication failures from a legitimate user.
+  ground_truth: benign
+  scope: in_scope
+  expected_alert: false
+  notes: 'True negative: sparse legitimate mistypes should not trigger brute-force detection.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.5
+    username: alice
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.5
+    username: alice
+- id: DET-SSH-001-S06
+  detector_id: DET-SSH-001
+  description: 15 authentication failures caused by repeated legitimate administrator password mistakes.
+  ground_truth: benign
+  scope: in_scope
+  expected_alert: true
+  notes: 'Intended false positive: volume matches attacker pattern but activity is a mistaken admin, not
+    credential guessing.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:00:40Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:01:20Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:02:40Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:03:20Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:04:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:04:40Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:05:20Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:06:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:06:40Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:07:20Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:08:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:08:40Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+  - timestamp: '2026-08-25T10:09:20Z'
+    auth_result: failure
+    source_ip: 198.51.100.10
+    username: jsmith
+- id: DET-SSH-001-S07
+  detector_id: DET-SSH-001
+  description: 15 authentication failures caused by stale automation credentials.
+  ground_truth: benign
+  scope: in_scope
+  expected_alert: true
+  notes: 'Intended false positive: a deploy job retries with outdated credentials and crosses the brute-force
+    threshold.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:00:35Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:01:10Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:01:45Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:02:20Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:02:55Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:03:30Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:04:05Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:04:40Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:05:15Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:05:50Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:06:25Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:07:00Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:07:35Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+  - timestamp: '2026-08-25T10:08:10Z'
+    auth_result: failure
+    source_ip: 198.51.100.20
+    username: deploy_bot
+- id: DET-SSH-001-S08
+  detector_id: DET-SSH-001
+  description: Distributed brute force across multiple attacker IPs, each remaining below the per-IP threshold.
+  ground_truth: malicious
+  scope: limitation
+  expected_alert: false
+  notes: 'Known coverage limitation: DET-SSH-001 groups only by source_ip, so coordinated multi-IP attacks
+    evade detection when each IP stays under 15 failures. Excluded from primary TP/FP/TN/FN metrics.'
+  events:
+  - timestamp: '2026-08-25T10:00:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:00:30Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:01:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:01:30Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:02:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:02:30Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:03:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:03:30Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:04:00Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:04:30Z'
+    auth_result: failure
+    source_ip: 203.0.113.101
+    username: root
+  - timestamp: '2026-08-25T10:00:10Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:00:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:01:10Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:01:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:02:10Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:02:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:03:10Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:03:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:04:10Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:04:40Z'
+    auth_result: failure
+    source_ip: 203.0.113.102
+    username: root
+  - timestamp: '2026-08-25T10:00:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
+  - timestamp: '2026-08-25T10:00:50Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
+  - timestamp: '2026-08-25T10:01:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
+  - timestamp: '2026-08-25T10:01:50Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
+  - timestamp: '2026-08-25T10:02:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
+  - timestamp: '2026-08-25T10:02:50Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
+  - timestamp: '2026-08-25T10:03:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
+  - timestamp: '2026-08-25T10:03:50Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
+  - timestamp: '2026-08-25T10:04:20Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
+  - timestamp: '2026-08-25T10:04:50Z'
+    auth_result: failure
+    source_ip: 203.0.113.103
+    username: root
